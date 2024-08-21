@@ -1,5 +1,7 @@
 import csv
 from collections import defaultdict
+import argparse
+
 
 # Function to extract information from lookup input file and the protocol numbers with keywords to dictionaries
 def csv_to_dict(protocol_info, lookup_table):
@@ -100,13 +102,20 @@ def generate_output(tags_count_dict, port_protocol_count_dict, tags_count, port_
 
 def main():
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("flow_log", help="Version 2 Flow log Textfile")
+    parser.add_argument("lookup_table", help="Lookup table csv file")
+    args = parser.parse_args()
+
     # Loading CSV info into dictionaries
-    protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", "lookup_table.csv")
+    #protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", "lookup_table.csv")
+    protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", args.lookup_table)
     #print(lookup_table)
     #print(protocol_numbers)
 
     # Getting counts
-    tags_count_dict, port_protocol_count_dict = get_count("flow_log.txt", protocol_numbers, lookup_table)
+    #tags_count_dict, port_protocol_count_dict = get_count("flow_log.txt", protocol_numbers, lookup_table)
+    tags_count_dict, port_protocol_count_dict = get_count(args.flow_log, protocol_numbers, lookup_table)
     #print(tags_count_dict)
     #print(port_protocol_count_dict)
 
