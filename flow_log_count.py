@@ -1,4 +1,6 @@
 import csv
+from collections import defaultdict
+
 
 # Function to extract information from lookup input file and the protocol numbers with keywords to dictionaries
 def csv_to_dict(protocol_info, lookup_table):
@@ -26,11 +28,12 @@ def csv_to_dict(protocol_info, lookup_table):
 
 
 # Function to count the tags and port/protocol combinations and generate output
-def get_output(flow_log, protocol_numbers, lookup_table, tags_count, port_protocol_count):
+#def get_output(flow_log, protocol_numbers, lookup_table, tags_count, port_protocol_count):
+def get_output(flow_log, protocol_numbers, lookup_table):
 
     untagged_count = 0
-    tags_count_dict = {}
-    port_protocol_count_dict = {}
+    tags_count_dict = defaultdict(int)
+    port_protocol_count_dict = defaultdict(int)
 
 
     with open(flow_log, 'r', newline='') as logfile:
@@ -50,7 +53,9 @@ def get_output(flow_log, protocol_numbers, lookup_table, tags_count, port_protoc
             # Increment count value of (dstport,protocol) in port_protocol_op dict
             port_protocol_count_dict[lookup_key] += 1
 
-
+    tags_count_dict['Untagged'] = untagged_count
+    
+    return tags_count_dict, port_protocol_count_dict
     # Create a new output file for tags and port/protocol counts each, and write to it
 
 
@@ -58,12 +63,12 @@ def get_output(flow_log, protocol_numbers, lookup_table, tags_count, port_protoc
 def main():
     protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", "lookup_table.csv")
 
-    get_output("flow_log.txt", protocol_numbers, lookup_table, "tags_count.txt", "port_protocol_count.txt")
+    #get_output("flow_log.txt", protocol_numbers, lookup_table, "tags_count.txt", "port_protocol_count.txt")
     #print(lookup_table)
     #print(protocol_numbers)
-    
-    # Calling function for generating output
-    #get_output()
+    tags_count_dict, port_protocol_count_dict = get_output("flow_log.txt", protocol_numbers, lookup_table)
+    print(tags_count_dict)
+    print(port_protocol_count_dict)
 
 
 if __name__ == "__main__":
