@@ -27,14 +27,12 @@ def csv_to_dict(protocol_info, lookup_table):
     return protocol_numbers, lookup
 
 
-# Function to count the tags and port/protocol combinations and generate output
-#def get_output(flow_log, protocol_numbers, lookup_table, tags_count, port_protocol_count):
-def get_output(flow_log, protocol_numbers, lookup_table):
+# Function to count the tags and port/protocol combinations
+def get_count(flow_log, protocol_numbers, lookup_table):
 
     untagged_count = 0
     tags_count_dict = defaultdict(int)
     port_protocol_count_dict = defaultdict(int)
-
 
     with open(flow_log, 'r', newline='') as logfile:
         for each_log in logfile:
@@ -54,21 +52,40 @@ def get_output(flow_log, protocol_numbers, lookup_table):
             port_protocol_count_dict[lookup_key] += 1
 
     tags_count_dict['Untagged'] = untagged_count
-    
     return tags_count_dict, port_protocol_count_dict
-    # Create a new output file for tags and port/protocol counts each, and write to it
+
+
+# Create a new output file for tags and port/protocol counts each, and write to it
+def generate_output(tags_count_dict, port_protocol_count_dict, tags_count, port_protocol_count):
+    
+        # Write Tag Counts output file
+        with open(tags_count, 'w', newline='') as tags_count_file:
+            tags_count_file.write("Tag,Count\n")
+            for tag, count in tags_count_dict.items():
+                tags_count_file.write(tag+','+str(count)+'\n')
+        
+        # Write Port Protocol Combination Counts output file
+        with open(port_protocol_count, 'w', newline='') as port_protocol_count_file:
+            port_protocol_count_file.write("Port,Protocol,Count\n")
+            for (port, protocol), count in port_protocol_count_dict.items():
+                port_protocol_count_file.write(port+','+protocol+','+str(count)+'\n')
 
 
 
 def main():
-    protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", "lookup_table.csv")
 
-    #get_output("flow_log.txt", protocol_numbers, lookup_table, "tags_count.txt", "port_protocol_count.txt")
+    # Loading CSV info into dictionaries
+    protocol_numbers, lookup_table = csv_to_dict("protocol-numbers-1.csv", "lookup_table.csv")
     #print(lookup_table)
     #print(protocol_numbers)
-    tags_count_dict, port_protocol_count_dict = get_output("flow_log.txt", protocol_numbers, lookup_table)
-    print(tags_count_dict)
-    print(port_protocol_count_dict)
+
+    # Getting counts
+    tags_count_dict, port_protocol_count_dict = get_count("flow_log.txt", protocol_numbers, lookup_table)
+    #print(tags_count_dict)
+    #print(port_protocol_count_dict)
+
+    # Generate output files
+    generate_output(tags_count_dict, port_protocol_count_dict, "tags_count.txt", "port_protocol_count.txt")
 
 
 if __name__ == "__main__":
