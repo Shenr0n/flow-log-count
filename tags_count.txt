@@ -1,0 +1,7 @@
+Tag,Count
+sv_P2,4096
+sv_P1,8192
+email,12288
+sv_P5,8192
+SV_P3,28672
+Untagged,40960
